@@ -7,8 +7,8 @@
 #include <errno.h>
 
 #define NUM_ACCOUNTS 1 // Number of bank accounts
-#define NUM_THREADS 5 // Number of threads
-#define TRANSACTIONS_PER_TELLER 100 // Number of transactions per thread
+#define NUM_THREADS 3 // Number of threads
+#define TRANSACTIONS_PER_TELLER 10 // Number of transactions per thread
 #define INITIAL_BALANCE 1000.0 // Starting balance of each account
 
 // Add mutex to account structure
@@ -28,15 +28,19 @@ int thread_ids[NUM_THREADS]; // Array that holds teller IDs
 // Deposit function (protected transaction)
 void deposit(int account_id, double amount) {
 	pthread_mutex_lock(&accounts[account_id].lock); // Lock before modifying
-	accounts[account_id].balance += amount; // Add mount to balance
-	accounts[account_id].transaction_count++; // Up transaction count by 1
+	double temp = accounts[account_id].balance;
+        usleep(rand() % 10000); // Random short deley, but this time it won't increase any chances of race condition
+        accounts[account_id].balance = temp + amount; // Add amount to balance
+        accounts[account_id].transaction_count++; // Up transaction count by 1
 	pthread_mutex_unlock(&accounts[account_id].lock); // Unlock after modifying
 }
 
 // Withdraw function (protected transaction)
 void withdraw(int account_id, double amount) {
 	pthread_mutex_lock(&accounts[account_id].lock); // Lock before modifying
-        accounts[account_id].balance -= amount; // Subtract amount from balance
+        double temp = accounts[account_id].balance;
+        usleep(rand() % 10000); // Random short deley, but this time it won't i>
+        accounts[account_id].balance = temp - amount; // Add amount to balance
         accounts[account_id].transaction_count++; // Up transaction count by 1
         pthread_mutex_unlock(&accounts[account_id].lock); // Unlock after modifying
 }
@@ -51,12 +55,10 @@ void* teller_thread(void* arg) {
 		if(teller_id == 1 || teller_id == 2){ // Teller 1 and 2 always deposits
 			double amount = 100.0;
 			printf("Thread %d: Depositing %.2f\n", teller_id, amount); // Let user know
-			usleep(rand_r(&seed) % 1000); // Random short delay, but this time it won't increase any chances of race condition
 			deposit(0, amount); // Deposit into Account 0
 		} else{ // Teller 3 always withdraws
 			double amount = 50.0;
 			printf("Thread %d: Withdrawing %.2f\n", teller_id, amount); //  Let user know
-			usleep(rand_r(&seed) % 1000); // Random short delay, but this time it won't increase any chances of race condition
 			withdraw(0, amount); // Withdraw from Account 0
 		}
 	}
