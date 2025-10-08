@@ -7,8 +7,8 @@
 #include <errno.h>
 
 #define NUM_ACCOUNTS 1 // Number of bank accounts
-#define NUM_THREADS 6 // Number of threads
-#define TRANSACTIONS_PER_TELLER 50 // Number of transactions per thread
+#define NUM_THREADS 3 // Number of threads
+#define TRANSACTIONS_PER_TELLER 10 // Number of transactions per thread
 #define INITIAL_BALANCE 1000.0 // Starting balance of each account
 
 // Shared data structure
@@ -27,13 +27,17 @@ int thread_ids[NUM_THREADS]; // Array that holds teller IDs
 // Thread function
 // Deposit adds money to account
 void deposit(int account_id, double amount) {
-        accounts[account_id].balance += amount; // Add amount to balance
+	double temp = accounts[account_id].balance;
+	usleep(rand() % 10000); // Random short delay to increase chances of race condition
+        accounts[account_id].balance = temp + amount; // Add amount to balance
         accounts[account_id].transaction_count++; // Up transaction count by 1
 }
 
 // Withdraw removes money from account
 void withdraw(int account_id, double amount) {
-        accounts[account_id].balance -= amount; // Subtract amount from balance
+	double temp = accounts[account_id].balance;
+        usleep(rand() % 10000); // Random short delay to increase chances of race condition
+        accounts[account_id].balance = temp - amount; // Subtract amount from balance
         accounts[account_id].transaction_count++; // Up transaction count by 1
 }
 
@@ -47,12 +51,10 @@ void* teller_thread(void* arg) {
 		if(teller_id == 1 || teller_id == 2){ // Teller 1 and 2 always deposit
 			double amount = 100.0;
 			printf("Thread %d: Depositing %.2f\n", teller_id, amount); // Lets user know
-			usleep(rand_r(&seed) % 1000); // Random short delay to increase chances of race condition
 			deposit(0, amount); // Deposits into Account 0
 		} else{ // Teller 3 always withdraws
 			double amount = 50.0;
 			printf("Thread %d: Withdrawing %.2f\n", teller_id, amount); // Lets user know
-			usleep(rand_r(&seed) % 1000); // Random short delay to increase chances of race condition
 			withdraw(0, amount); // Withdraws into Account 0
 		}
 	}
