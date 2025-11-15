@@ -1,3 +1,6 @@
+// Chernoh Bah
+// CS3502 04
+
 // ============================================
 // producer.c - Producer process starter
 // ============================================
@@ -116,4 +119,5 @@ int main(int argc, char* argv[]) {
     printf("Producer %d: Finished producing %d items\n", producer_id, num_items); // Notify user
     cleanup(); // Clean up resources
     return 0;  // Signal success
+
 }
