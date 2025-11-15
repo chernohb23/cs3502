@@ -1,3 +1,6 @@
+// Chernoh Bah
+// CS3502 04
+
 // ============================================
 // consumer.c - Consumer process starter
 // ============================================
@@ -101,4 +104,5 @@ int main(int argc, char* argv[]) {
     printf("Consumer %d: Finished consuming %d items\n", consumer_id, num_items); // Notify user
     cleanup(); // Clean up resources
     return 0;  // Signal success
+
 }
