@@ -1,3 +1,6 @@
+// Chernoh Bah
+// CS3502 04
+
 // ============================================
 // buffer.h - Shared definitions (INCOMPLETE - You must complete this!)
 // ============================================
